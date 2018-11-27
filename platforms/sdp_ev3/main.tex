@@ -1,0 +1,200 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{listings}
+
+\title{EV3 Quick Guide}
+\author{SDP Team}
+\date{January 2018}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+The aim of this guide is to allow you to quickly setup your EV3 brick and how to execute programs. The brick has a custom OS installed called \texttt{ev3dev}, with more details found here \url{http://www.ev3dev.org/}. 
+
+The EV3 has a variety of sensors that are connected via one of the four ports on the bottom of the brick, listed as 1, 2, 3, and 4. The top ports, listed as A, B, C, and D are used for motors. This tutorial will go through setting up motors and a few of the sensors, specifically the touch and ultrasonic sensors. 
+
+\section{Connecting to the brick}
+\subsection{USB connection}
+To turn on the brick make sure that the EV3 brick is not connected to any motors or sensors, as this will significantly increase the time for the brick to boot. This guide will focus on using the brick via the \texttt{DICE} machines, and will only be concerned with connecting using a USB cable. For details on using non-\texttt{DICE} machines please see here~\cite{connectUSb}.
+
+The instructions for \texttt{DICE} are as follows:
+
+\begin{enumerate}
+    \item Turn on the EV3 brick
+    \item Plug the USB cable into the PC port on the top of brick, and the cable into the computer
+    \item ssh into the brick through the terminal: \texttt{ssh robot@ev3dev}
+    \item The password is maker
+\end{enumerate}
+
+If you are having difficulty connecting, the brick may not have its IP address setup correctly. To fix this:
+
+\begin{enumerate}
+    \item Navigate on the brick to \textit{Wireless and Networks}
+    \item Then go to \textit{All Network Connections}
+    \item Click on \textit{Wired}
+    \item Scroll to \textit{IPv4}
+    \item Press \textit{Change}
+    \item If you ping ev3dev this will say what the IP address should be, and this is what you need to change the IP address to
+\end{enumerate}
+
+\subsection{Bluetooth Connection}
+\subsubsection{Connecting to Computer}
+As of writing this document, the EV3 currently cannot connect to the \texttt{DICE} OS via Bluetooth. If you wish to connect via Bluetooth you will need to get a self managed machine. Email Garry Ellard with a small justification why you need the self managed machine and one will be setup for you in your group's assigned demo room. You will also be given a Bluetooth dongle so that your machine can use Bluetooth. You may use this machine however your group wishes, installing Windows, Ubuntu, etc.
+
+The instructions are taken from this tutorial~\cite{connectBluetooth}, and the instructions for connecting with Ubuntu are summarised below.
+
+\begin{enumerate}
+    \item You will need to have Bluetooth Manager installed: \texttt{sudo apt-get install blueman}
+    \item Open Bluetooth Manager
+    \item In the \textit{View} menu select \textit{Local Services}
+    \item Go to \textit{Network}, and tick \textit{Network Access Point (NAP)} and \textit{dnsmasq}
+    \item Change the IP address to 10.42.0.1
+    \item Click \textit{Apply}, and then \textit{Close}
+    \item On the EV3, scroll to \textit{Wireless and Networks}, then \textit{Bluetooth}, and make sure that \textit{Powered}, and \textit{Visible} are both checked
+    \item On your computer, in Bluetooth Manager, click \textit{Search}, and select \textit{ev3dev}
+    \item Next you have to pair the devices, which is done by pressing the key icon. You must make sure that the EV3 is not paired with any other devices at this stage, as it will not recognise the new changes made on your computer via steps 3-5. After this you will be able to pair with multiple devices in different orders (e.g. a second EV3 can connect to your computer at a later date, even if the EV3 has also paired with your phone beforehand)
+    \item When you press the Key icon, both devices will be sent a confirmation code displayed on both the computer and the EV3, click accept on both devices
+    \item From here you need to have the computer trust the device by clicking the Star icon
+    \item With the devices successfully paired, there should now be a new button to press on on the EV3 screen, \textit{Network Connection}. You can find this at a later date by going to \textit{Wireless and Networks}\(\rightarrow\)\textit{All Network Connections}\(\rightarrow\)\textit{YOUR MACHINE}
+    \item In the new list of options, click \textit{Connect}, an IP address should now be present on the top left of the EV3 screen (you can also check \textit{Connect automatically} which will, if possible, connect to this machine when it boots up)
+\end{enumerate}
+
+With the brick now connected you can access the brick through your computer in a similar manner to USB connection: \texttt{ssh robot@IP\_ADDRESS\_ON\_EV3\_SCREEN}. 
+
+\subsubsection{Connecting to a Phone (Android)}
+You can also connect the EV3 to your phone via Bluetooth, but specifically Android. There does not seem to be official methods on connecting to iPhones. The instructions below are summarised from~\cite{connectPhone}.
+
+\begin{enumerate}
+    \item On the EV3, scroll to \textit{Wireless and Networks}, then \textit{Bluetooth}, and make sure that \textit{Powered}, and \textit{Visible} are both checked
+    \item On your Android phone turn on Bluetooth
+    \item Navigate to \textit{Tethering \& Mobile Hotspot} and turn on \textit{Bluetooth Tethering}
+    \item On your phone pair with the EV3
+    \item A confirmation code will appear on both devices, click accept on both
+    \item With the devices successfully paired, there should now be a new button to press on on the EV3 screen, \textit{Network Connection}. You can find this at a later date by going to \textit{Wireless and Networks}\(\rightarrow\)\textit{All Network Connections}\(\rightarrow\)\textit{YOUR PHONE}
+    \item In the new list of options, click \textit{Connect}, an IP address should now be present on the top left of the EV3 screen (you can also check \textit{Connect automatically} which will, if possible, connect to this phone when it boots up)
+    \item You can ssh into the brick from the phone using the \texttt{ConnectBot} app, and in a similar manner to that connecting via desktop
+\end{enumerate}
+
+\subsubsection{Connecting to another EV3 brick}
+This is very similar to connecting to other devices (computer or phone), but on one of the bricks you will need to navigate to \textit{Wireless and Networks}\(\rightarrow\)\textit{Tethering} and checking \textit{Bluetooth Tethering}. From here you can pair the devices and on the second brick connect in a similar way as described earlier: \textit{Wireless and Networks}\(\rightarrow\)\textit{All Network Connections}\(\rightarrow\)\textit{THE OTHER EV3 BRICK}\(\rightarrow\)\textit{Connect}.
+
+\section{First Commands}
+The EV3 brick can run python programs, and so can also run commands via the python terminal. Type \texttt{python3} to open the terminal. If you enter the code below 
+
+\begin{lstlisting}[language=Python]
+import ev3dev.ev3 as ev3
+m=ev3.LaregMotor('outA')
+if not (m.connected):
+    print(``Plug a motor into port A'')
+else:
+    m.run_timed(speed_sp=300, time_sp=1000)
+\end{lstlisting}
+
+the motor will run for one second if connected properly. What the code is doing is firstly importing the EV3 modules, then assigning a motor, and lastly we perform a check to make sure the motor is connected.
+
+This allows small snippets of code to be tested on the brick quickly in real time (as will be seen is useful in the next section). It is important to note that the commands the EV3 is currently running may continue even if you exit the python terminal, i.e. likely a motor is continuing to operate. If this happens open up the terminal again, assign the correct motor and use the code
+
+\begin{lstlisting}[language=python]
+import ev3dev.ev3 as ev3
+m=ev3.LargeMotor('outA')
+m.stop()
+\end{lstlisting}
+
+If you are running a program through the UI on the brick you can stop the program by pressing the top left button for 3 seconds.  
+
+\section{Running Programs}
+\subsection{Software Cycle for Programming the Brick}
+The general development cycle for software development with python on the EV3 is
+
+\begin{enumerate}
+    \item Write your code in a text editor on your computer
+    \item Send your files to the EV3: \texttt{scp file1 file2 etc robot@ev3dev:/home/robot}
+    \item Test your code on the brick by using the UI on the brick, or connect to the brick and through the terminal type: \texttt{./program.py}
+    \item If the program returns an error stating that it is not an executable file use the command: \texttt{chmod +x file.py}
+    \item If you ran the program via the UI and the program is in a loop, you can stop the program by pressing the top left button for 3 seconds
+\end{enumerate}
+
+To be able to run the python code via the UI on the brick it needs to be made as an executable file. The bricks should be set up already to do this, but at the start of any python file that you wish to run as an executable needs to have this line of code
+
+\begin{lstlisting}[language=Python]
+#! /usr/bin/env python3
+\end{lstlisting}
+
+There is a text editor on the brick, nano, that you can use to edit files already on the brick. This will obviously not change the code you have on your computer, meaning that any uploads of your code from the computer will overwrite the files on the brick. It's advised that any changes on the code should be done on the files on your computer and then re-uploaded to the brick to esnure consistent work copies. 
+
+\subsection{Example Files}
+On the SDP wiki~\cite{sdpWiki} there is a folder containing several example files that you can download (\textit{EV3 Test Files}). The file you will want to run is \texttt{main.py} which will call one of the functions in \textit{tutorial.py}. To try a different function uncomment the function to be called from \textit{tutorial.py} and make sure that the other call to functions are commented out. 
+
+Briefly going over the functions in \textit{tutorial.py}
+\begin{itemize}
+    \item Step A: This gives an example of motors running, and demonstrates that these commands are non-blocking
+    \item Step B: By using a touch sensor, the user can turn on and off an LED light on the EV3 brick
+    \item Step C: By using 2 touch sensors, the user can either make the motor(s) go forward or backward
+    \item Step D: The ultrasound sensor records readings until the user presses the back button (top left on the brick), and it then outputs a text file with these readings
+\end{itemize}
+
+Lastly there is an example \texttt{MATLAB} file called \texttt{graph\_maker.m} which takes in a text file, produces and saves a graph. This can be used with the output file from Step D. The function takes 4 arguments:
+
+\begin{enumerate}
+    \item filename: A string of the path to the text file to be used
+    \item tle: A string which shall be the title on the graph
+    \item x\_axis: A string stating what the x-axis should be named as
+    \item y\_axis: A string stating what the y-axis should be named as
+\end{enumerate}
+
+The lines of code
+
+\begin{lstlisting}[language=Matlab]
+fileID = fopen(filename,'r');
+formatSpec = `%f';
+results = fscanf(fileID,formatSpec);
+\end{lstlisting}
+
+is what reads in the values in the text file. The second line dictates how the date should be read. In this example it shall assume the data is one column of float numbers. To change the number of columns to be considered you just have to add another type to the string. For example if you wanted to read in a file with two columns of float numbers then it will be
+
+\begin{lstlisting}[language=Matlab]
+formatSpec=`%f %f';
+\end{lstlisting}
+
+\subsection{Communicating between Devices}
+Below is a summarised tutorial of using \texttt{Mosquitto} as a communication protocol for \texttt{ev3dev} from~\cite{mqttTutorial}.
+
+\texttt{Mosquitto}, \texttt{MQTT}, is a communication protocol between different devices. The general idea is that there are publishers and subscribers for topics. A very simple example is that there are two agents A and B and there is topic C, and let's also say A publishes to C, while B subscribes to C. What this means is that whenever A publishes to C, i.e. sends data to topic C, B will be sent this data since it is subscribing to it. 
+
+The last thing to consider is which device is going to be the Broker, which handles the messaging and determines who should be sent what data given their publishing/subscription to topics. A Broker can also publish and subscribe to topics. A good overview with more information on \texttt{MQTT} can be found here~\cite{mqtt}.
+
+To setup \texttt{MQTT}
+\begin{enumerate}
+    \item On the device that is going to be the Broker: \texttt{sudo apt-get install mosquitto}
+    \item You can check if this has installed properly by running the command: \texttt{systemctl status mosquitto}
+    \item You will need \texttt{pip3} to install the \texttt{MQTT} module on all devices that are going to use \texttt{MQTT}: \texttt{sudo apt-get install python3-pip}
+    \item Finally: \texttt{sudo pip3 install paho-mqtt}
+\end{enumerate}
+
+It must be noted that on the EV3 bricks this can take a long time to install the necessary files. 
+
+There is example code of a publisher and subscriber in the test code found on the SDP wiki~\cite{sdpWiki}. These files are \texttt{publisher.py} and \texttt{subscriber.py}. The machine running \texttt{subscribe.py} will be stuck in a loop until it hears a message saying ``Hello World!'' from the topic ``test''. Once it has the machine will print to the terminal ``Yes!'', disconnect and the program will end. Any machine that executes the \texttt{publisher.py} file will connect, send a message saying ``Hello World!'' to the topic ``test'', and then disconnect. 
+
+It should also be noted that the first argument passed in the line of code 
+
+\begin{lstlisting}[language=Python]
+client.connect(``THE_IP_ADDRESS_OF_OUR_BROKER",1883,60)
+\end{lstlisting}
+
+in both files will need to replaced with the IP address of the Broker, still in quotation marks. If it's an EV3 brick this can be found on the top left of the screen, if it's a computer then you can find this by running the command: \texttt{hostname -I}. If the machine publishing/subscribing is the Broker than the first argument can be set to \textit{``localhost''}. 
+
+\subsection{C++}
+\texttt{ev3dev} can also support programs written in \texttt{c++}. These programs have to be compiled first though, and requires to be done through the \texttt{ev3dev} OS. So while programs can be compiled on the brick itself this is very slow and it is advised instead to use docker to compile the programs first on your computer. Afterwards transfer the compiled programs across. This document will not go into detail on how to set this up, but you can find full details here~\cite{cppCompile}.
+
+
+
+\bibliographystyle{unsrt}
+\bibliography{references}
+
+\end{document}
