@@ -1,0 +1,42 @@
+\documentclass[a4paper]{article}
+\usepackage{array}  
+\usepackage[table]{xcolor}% http://ctan.org/pkg/xcolor
+\usepackage{geometry}
+\geometry{margin=1.25in}
+\usepackage{hhline}
+ %\geometry{
+ %a4paper,
+ %total={170mm,257mm},
+ %left=40mm,
+ %right=40mm
+ %}
+
+\begin{document} 
+\section*{Demo day: Group \textit{(insert group number)}}
+\showoutput
+
+\newcolumntype{C}[1]{%
+ >{\vbox to 20ex\bgroup\arraybackslash}%
+ p{#1}%
+ <{\vskip-\baselineskip\egroup}}  
+%\vspace{1.5em}
+
+\begin{tabular}{|p{15cm}|}
+	\hline
+	\cellcolor{blue!25}\large
+	\textbf{What were your goals?}
+	\\ \hline
+	\vbox{\vsize=0.5
+%  some text some text some text some text
+%  some text some text some text some text
+
+%  some text some text some text some text
+%  some text some text some text some text 
+  }
+  \\
+  \hline
+
+\end{tabular}
+
+  
+\end{document}
